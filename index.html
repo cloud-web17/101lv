@@ -3,176 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Livestream_101</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <title>Livestream101</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background: darkgray;
-            backdrop-filter: blur(10px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
-        h1 {
-            color: black;
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            font-size: 30px;
-            z-index: 2;
-        }
-        .video-container {
-            position: relative;
-            width: 95vw;
-            max-width: 900px;
-            height: auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: black;
-            border-radius: 10px;
-            margin-top: 15vh;
-        }
-        video {
-            width: 100%;
-            height: auto;
-            object-fit: contain;
-            border-radius: 10px;
-        }
-        .watermark {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+            font-family: Arial, sans-serif;
+            background-color: #111;
             color: white;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 18px;
-            font-weight: bold;
-            z-index: 9999;
-            pointer-events: none;
         }
+        
+        header {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+        }
+        
         .notice-btn {
-            position: absolute;
-            top: 28px;
-            right: 10px;
-            background: black;
+            background-color: #ff5722;
             color: white;
             border: none;
-            padding: 8px;
-            border-radius: 5px;
+            padding: 8px 15px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
+            font-weight: bold;
         }
-        .notice-popup {
+        
+        .notice-btn:hover {
+            background-color: #e64a19;
+        }
+        
+        .video-container {
+            margin-top: 60px;
+            width: 100%;
+            height: calc(100vh - 60px);
+        }
+        
+        .modal {
             display: none;
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: gray;
-            backdrop-filter: blur(20px);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-            width: 90vw;
-            max-width: 730px;
-            max-height: 60vh;
-            overflow-y: auto;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            justify-content: center;
             align-items: center;
         }
+        
+        .modal-content {
+            background-color: #222;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
         .close-btn {
-            margin-top: 10px;
-            background: red;
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
             cursor: pointer;
         }
-        .schedule-container {
-            width: 90vw;
-            max-width: 700px;
-            background: black;
+        
+        .close-btn:hover {
             color: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            font-size: 14px;
-            text-align: center;
-            max-height: 250px;
-            overflow-y: auto;
-            justify-content: flex-start;
         }
-        .schedule-item {
-            margin: 5px 0;
-            padding: 5px;
-            border-bottom: 1px solid gray;
+        
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
     </style>
 </head>
 <body>
-    <h1>Livestream_101</h1>
-    <button class="notice-btn" onclick="showNotice()">Notice</button>
-    <div class="notification" id="notification-dot"></div>
-    <div class="video-container" id="video-container">
-        <video id="video" controls autoplay muted playsinline></video>
-        <div class="watermark" id="watermark">LIVESTREAM101</div>
+    <header>
+        <div class="logo">Livestream101</div>
+        <button class="notice-btn" id="noticeBtn">Notice</button>
+    </header>
+    
+    <div class="video-container">
+        <video id="video" controls autoplay></video>
     </div>
-    <div class="notice-popup" id="notice-popup">
-        <h1><b>NOTICE</b></h1>
-        <p>If you experience any issues with playback, please try refreshing the page to reset the stream.</p>
-        <p>For the best experience, we recommend using a stable internet connection and the latest version of your browser.</p>
-        <p><b>=====DON'T RE-STREAM ON OTHER PLATFORM=====</b></p>
-        <div class="schedule-container" id="schedule-container">
-            <h3>📅 Live Schedule</h3>
+    
+    <div class="modal" id="noticeModal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModal">&times;</span>
+            <h2>Important Notice</h2>
+            <p>This is a streaming website. Please be aware of the following:</p>
+            <ul>
+                <li>The content is streamed directly from the provided URL</li>
+                <li>Ensure you have a stable internet connection for best quality</li>
+                <li>This player supports HLS streaming format</li>
+                <li>Volume can be adjusted using the player controls</li>
+                <li>For fullscreen mode, click the fullscreen icon in the player</li>
+           <h3>📅 Live Schedule</h3>
             <p>Saturday, March 29th,</p>
             <div id="schedule-list">
-        <p class="schedule-item">BTS Dome concert broadcast Documentary | 3:30am - 4:10am</p>
-        <p class="schedule-item">BTS WORLD TOUR 'LOVE YOURSELF' 〜JAPAN EDITION〜 at Tokyo Dome | 4:10am - 7:00am</p>
-        <p class="schedule-item">BTS Stadium Concert Documentary | 7:00am - 7:40am</p>
-        <p class="schedule-item">BTS WORLD TOUR 'LOVE YOURSELF: SPEAK YOURSELF'〜JAPAN EDITION〜 | 7:40am - 10:30am</p>
-        <p class="schedule-item">ENHYPEN WORLD TOUR 'FATE' IN JAPAN Tokyo Dome | 10:30am - 1:40pm</p>
-        <p class="schedule-item">ENHYPEN WORLD TOUR 'FATE PLUS' IN JAPAN Close-up documentary & exclusive interview |  2:00pm - 2:30pm</p>
-        <p class="schedule-item">ENHYPEN WORLD TOUR 'FATE PLUS' IN JAPAN | 2:30pm - 5:40pm</p>
-        <p class="schedule-item">ENHYPEN WORLD TOUR 'WALK THE LINE' IN JAPAN Kyocera Dome Osaka | 6:00pm - 8:50pm</p>
-        <p class="schedule-item">2016 'LIKE SEVENTEEN - Shining Diamond' in Japan CONCERT | 2:30am - 4:15am</p>
-            </div>
+        <li class="schedule-item">BTS Dome concert broadcast Documentary | 3:30am - 4:10am</li>
+        <li class="schedule-item">BTS WORLD TOUR 'LOVE YOURSELF' 〜JAPAN EDITION〜 at Tokyo Dome | 4:10am - 7:00am</p>
+        <li class="schedule-item">BTS Stadium Concert Documentary | 7:00am - 7:40am</li>
+        <li class="schedule-item">BTS WORLD TOUR 'LOVE YOURSELF: SPEAK YOURSELF'〜JAPAN EDITION〜 | 7:40am - 10:30am</li>
+        <li class="schedule-item">ENHYPEN WORLD TOUR 'FATE' IN JAPAN Tokyo Dome | 10:30am - 1:40pm</li>
+        <li class="schedule-item">ENHYPEN WORLD TOUR 'FATE PLUS' IN JAPAN Close-up documentary & exclusive interview |  2:00pm - 2:30pm</p>
+        <li class="schedule-item">ENHYPEN WORLD TOUR 'FATE PLUS' IN JAPAN | 2:30pm - 5:40pm</li>
+        <li class="schedule-item">ENHYPEN WORLD TOUR 'WALK THE LINE' IN JAPAN Kyocera Dome Osaka | 6:00pm - 8:50pm</li>
+        <li class="schedule-item">2016 'LIKE SEVENTEEN - Shining Diamond' in Japan CONCERT | 2:30am - 4:15am</li>
+            </ul>
+            <p>If the stream doesn't load, please refresh the page or check your network connection.</li>
         </div>
-        <button class="close-btn" onclick="closeNotice()">Close</button>
     </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script>
-        function showNotice() {
-            document.getElementById('notice-popup').style.display = 'block';
-            document.getElementById('notification-dot').style.display = 'none';
+        // Video player setup
+        const video = document.getElementById('video');
+        const videoSrc = 'https://luong.utako.moe/tbsch1/index.m3u8';
+        
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(videoSrc);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                video.play();
+            });
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = videoSrc;
+            video.addEventListener('loadedmetadata', function() {
+                video.play();
+            });
         }
-        function closeNotice() {
-            document.getElementById('notice-popup').style.display = 'none';
+        
+        // Modal functionality
+        const modal = document.getElementById('noticeModal');
+        const btn = document.getElementById('noticeBtn');
+        const span = document.getElementById('closeModal');
+        
+        btn.onclick = function() {
+            modal.style.display = 'flex';
         }
-        window.onload = function() {
-            document.getElementById('notification-dot').style.display = 'block';
-        };
-
-        function loadVideo() {
-            const video = document.getElementById('video');
-            const videoSrc = "https://luong.utako.moe/tbsch1/index.m3u8";
-
-            if (Hls.isSupported()) {
-                const hls = new Hls();
-                hls.loadSource(videoSrc);
-                hls.attachMedia(video);
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = videoSrc;
+        
+        span.onclick = function() {
+            modal.style.display = 'none';
+        }
+        
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
             }
         }
-        loadVideo();
     </script>
 </body>
 </html>
